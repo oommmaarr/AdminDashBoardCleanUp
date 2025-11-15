@@ -244,71 +244,82 @@ const AuthPage = () => {
           )}
 
           {/* Login Page */}
-          {activeTab === "signin" && (
-            <motion.div
-              key="signin"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.4 }}
-            >
-              <h2 className="text-2xl font-bold text-white mb-8 tracking-tight">
-                مرحبًا بعودتك
-              </h2>
+{activeTab === "signin" && (
+  <motion.div
+    key="signin"
+    initial={{ opacity: 0, x: 30 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -30 }}
+    transition={{ duration: 0.4 }}
+    className="w-full"   
+  >
+    <h2 className="text-3xl font-bold text-white mb-10 tracking-tight">
+      مرحبًا بعودتك
+    </h2>
 
-              <div className="space-y-5">
-                <div className="relative">
-                  <Mail
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={20}
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="البريد الإلكتروني"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-800 bg-opacity-70 text-white pl-12 pr-4 py-3 rounded-lg border-b-2 border-gray-600 focus:border-cyan-500 focus:outline-none transition-all placeholder-gray-500"
-                  />
-                </div>
+    <div className="space-y-7">
+      
+      {/* Email */}
+      <div className="relative w-full">
+        <Mail
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+          size={22}
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="البريد الإلكتروني"
+          value={formData.email}
+          onChange={handleInputChange}
+          className="w-full bg-gray-800 bg-opacity-70 text-white pl-14 pr-4 py-3 
+          rounded-xl border-b-2 border-gray-600 focus:border-cyan-500 
+          focus:outline-none transition-all placeholder-gray-500 text-lg"
+        />
+      </div>
 
-                <div className="relative">
-                  <input
-                    type={loginShowPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="كلمة المرور"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-800 bg-opacity-70 text-white pl-4 pr-12 py-3 rounded-lg border-b-2 border-gray-600 focus:border-cyan-500 focus:outline-none transition-all placeholder-gray-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setLoginShowPassword(!loginShowPassword)}
-                    className="cursor-pointer absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
-                  >
-                    {loginShowPassword ? (
-                      <EyeOff size={20} />
-                    ) : (
-                      <Eye size={20} />
-                    )}
-                  </button>
-                </div>
+      {/* Password */}
+      <div className="relative w-full">
+        <input
+          type={loginShowPassword ? "text" : "password"}
+          name="password"
+          placeholder="كلمة المرور"
+          value={formData.password}
+          onChange={handleInputChange}
+          className="w-full bg-gray-800 bg-opacity-70 text-white pl-4 pr-14 py-3
+          rounded-xl border-b-2 border-gray-600 focus:border-cyan-500 
+          focus:outline-none transition-all placeholder-gray-500 text-lg"
+        />
 
-                <motion.button
-                  whileHover={{
-                    scale: 1.03,
-                    boxShadow: "0 0 20px rgba(34, 211, 238, 0.5)",
-                  }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="cursor-pointer w-full bg-linear-to-r from-blue-600 to-blue-800 text-white py-3.5 rounded-lg font-semibold shadow-lg hover:bg-cyan-700 transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? "جاري الإرسال..." : "تسجيل الدخول"}
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
+        <button
+          type="button"
+          onClick={() => setLoginShowPassword(!loginShowPassword)}
+          className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+        >
+          {loginShowPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+        </button>
+      </div>
+
+      {/* Button */}
+      <motion.button
+        whileHover={{
+          scale: 1.05,
+          boxShadow: "0 0 25px rgba(34, 211, 238, 0.55)",
+        }}
+        whileTap={{ scale: 0.96 }}
+        onClick={handleSubmit}
+        disabled={isSubmitting}
+        className="cursor-pointer w-full bg-gradient-to-r from-blue-600 to-blue-800 
+        text-white py-4 rounded-xl font-semibold text-lg shadow-lg 
+        hover:opacity-90 transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
+      >
+        {isSubmitting ? "جاري الإرسال..." : "تسجيل الدخول"}
+      </motion.button>
+
+    </div>
+  </motion.div>
+)}
+
+
         </AnimatePresence>
       </motion.div>
     </div>
