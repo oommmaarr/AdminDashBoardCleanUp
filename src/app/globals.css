@@ -1,26 +1,54 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@font-face {
+  font-family: "Lyon Arabic";
+  src: url("/fonts/Lyon_Arabic_2/COMM - Lyon Arabic Display Medium.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: "Lyon Arabic";
+  src: url("/fonts/Lyon_Arabic_2/COMM - Lyon Arabic Display Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html,body {
+  font-family: "Lyon Arabic", sans-serif;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+
+
+body {
+  --sb-track-color: #ffffff;
+  --sb-thumb-color: #0068b3;
+  --sb-size: 13px;
+}
+
+body::-webkit-scrollbar {
+  width: var(--sb-size);
+
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  body {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+
