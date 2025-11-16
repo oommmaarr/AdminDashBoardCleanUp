@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import AdminSidebar from "./components/navbar/page";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +23,15 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-lyon relative min-h-screen h-full bg-linear-to-br from-black via-[#003983] to-black bg-fixed`}
       >
-        <main className="relative z-10 pt-6">{children}</main>
+        <div className="flex h-full">
+          {/* Sidebar */}
+          <AdminSidebar />
+
+          {/* المحتوى الرئيسي */}
+          <main className="flex-1 pt-6">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );

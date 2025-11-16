@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 
 export default function AdminSidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState("cleaners");
+  const [activeItem, setActiveItem] = useState("dashboard");
   const [isDesktop, setIsDesktop] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function AdminSidebar() {
   }, []);
 
   const menuItems = [
-    { id: "dashboard", label: "لوحة التحكم", icon: LayoutDashboard, href: "/admin" },
+    { id: "dashboard", label: "لوحة التحكم", icon: LayoutDashboard, href: "/" },
     { id: "cleaners", label: "إدارة الموظفين", icon: Users, href: "/admin/cleaners" },
     { id: "portfolio", label: "إدارة سابقة الأعمال", icon: Briefcase, href: "/admin/portfolio" },
     { id: "home", label: "العودة للموقع", icon: Home, href: "/" },
@@ -128,7 +128,7 @@ export default function AdminSidebar() {
 
             {/* Header */}
             {!isCollapsed && (
-              <div className="p-6 pt-16 border-b border-white/10"> {/* pt-16 عشان نعمل مسافة للـ X */}
+              <div className="p-6 pt-6 border-b border-white/10"> {/* pt-16 عشان نعمل مسافة للـ X */}
                 <div className="flex items-center justify-between mb-6">
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
@@ -136,7 +136,7 @@ export default function AdminSidebar() {
                     transition={{ delay: 0.1 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-3 rounded-2xl shadow-lg">
+                    <div className="bg-linear-to-br from-blue-500 to-cyan-500 p-3 rounded-2xl shadow-lg">
                       <Settings className="w-8 h-8 text-white" />
                     </div>
                     <div>
@@ -180,7 +180,7 @@ export default function AdminSidebar() {
                     onClick={() => handleNavigation(item.href)}
                     className={`w-full flex items-center cursor-pointer ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-4 rounded-xl transition-all duration-300 ${
                       isActive
-                        ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105"
+                        ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105"
                         : "text-white/70 hover:text-white hover:bg-white/10 hover:scale-105"
                     }`}
                   >
