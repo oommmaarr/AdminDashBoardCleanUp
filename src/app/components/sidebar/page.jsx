@@ -8,7 +8,7 @@ import {
   Settings,
   LayoutDashboard,
   UserCircle,
-  X, // أضفنا أيقونة X
+  X,
 } from "lucide-react";
 import Hamburger from "hamburger-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,8 +30,6 @@ export default function AdminSidebar() {
 
   const menuItems = [
     { id: "dashboard", label: "لوحة التحكم", icon: LayoutDashboard, href: "/" },
-    { id: "cleaners", label: "إدارة الموظفين", icon: Users, href: "/admin/cleaners" },
-    { id: "portfolio", label: "إدارة سابقة الأعمال", icon: Briefcase, href: "/admin/portfolio" },
     { id: "home", label: "العودة للموقع", icon: Home, href: "/" },
   ];
 
@@ -44,18 +42,14 @@ export default function AdminSidebar() {
 
   return (
     <>
-      {/* Mobile Header - يختفي لما السايد بار مفتوح */}
+      {/* Mobile Header */}
       <div
         className={`lg:hidden fixed top-0 left-0 right-0 z-50 border-b border-white/10 shadow-2xl backdrop-blur-xl transition-transform duration-300 ${
           isSidebarOpen ? "translate-y-[-100%]" : "translate-y-0"
         }`}
       >
         <div className="flex items-center justify-between px-4 h-16">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-lg font-bold text-white">لوحة تحكم الادمن</h1>
-            </div>
-          </div>
+          <h1 className="text-lg font-bold text-white">لوحة تحكم الادمن</h1>
 
           <div className="z-50">
             <Hamburger
@@ -91,18 +85,17 @@ export default function AdminSidebar() {
             initial={{ x: isDesktop ? 0 : "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30, duration: 0.4 }}
-            className={`
-              fixed top-0 right-0 h-full border-l 
-              lg:bg-transparent  
-              border-white/10 shadow-2xl z-50 transition-all duration-300
-              ${isDesktop 
-                ? (isCollapsed ? "w-20" : "w-72 lg:w-80") 
-                : "w-full"
-              }
-            `}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+              duration: 0.4,
+            }}
+            className={`fixed top-0 right-0 h-full border-l border-white/10 shadow-2xl z-50 transition-all duration-300 ${
+              isDesktop ? (isCollapsed ? "w-20" : "w-72 lg:w-80") : "w-full"
+            }`}
           >
-            {/* Close Button (X) - فقط في الموبايل */}
+            {/* Close Button (Mobile) */}
             {!isDesktop && (
               <div className="absolute top-4 left-4 z-10">
                 <button
@@ -114,9 +107,13 @@ export default function AdminSidebar() {
               </div>
             )}
 
-            {/* Collapse Button For Desktop */}
+            {/* Collapse Button (Desktop) */}
             {isDesktop && (
-              <div className={`flex items-center justify-center p-4 border-b border-white/10 ${isCollapsed ? 'h-20' : ''}`}>
+              <div
+                className={`flex items-center justify-center p-4 border-b border-white/10 ${
+                  isCollapsed ? "h-20" : ""
+                }`}
+              >
                 <Hamburger
                   toggled={!isCollapsed}
                   toggle={() => setIsCollapsed(!isCollapsed)}
@@ -128,7 +125,7 @@ export default function AdminSidebar() {
 
             {/* Header */}
             {!isCollapsed && (
-              <div className="p-6 pt-6 border-b border-white/10"> {/* pt-16 عشان نعمل مسافة للـ X */}
+              <div className="p-6 pt-6 border-b border-white/10">
                 <div className="flex items-center justify-between mb-6">
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
@@ -146,7 +143,7 @@ export default function AdminSidebar() {
                   </motion.div>
                 </div>
 
-                {/* Admin Profile Card */}
+                {/* Profile */}
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -167,7 +164,13 @@ export default function AdminSidebar() {
             )}
 
             {/* Navigation */}
-            <div className={`p-4 space-y-3 overflow-y-auto ${!isCollapsed ? 'h-[calc(100vh-280px)]' : 'h-[calc(100vh-120px)]'}`}>
+            <div
+              className={`p-4 space-y-3 overflow-y-auto ${
+                !isCollapsed
+                  ? "h-[calc(100vh-280px)]"
+                  : "h-[calc(100vh-120px)]"
+              }`}
+            >
               {menuItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = activeItem === item.id;
@@ -178,16 +181,24 @@ export default function AdminSidebar() {
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.1 * (index + 1) }}
                     onClick={() => handleNavigation(item.href)}
-                    className={`w-full flex items-center cursor-pointer ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-4 rounded-xl transition-all duration-300 ${
+                    className={`w-full flex items-center cursor-pointer ${
+                      isCollapsed ? "justify-center" : "gap-3"
+                    } px-4 py-4 rounded-xl transition-all duration-300 ${
                       isActive
                         ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105"
                         : "text-white/70 hover:text-white hover:bg-white/10 hover:scale-105"
                     }`}
                   >
-                    <div className={`p-2 rounded-lg ${isCollapsed ? 'mx-auto' : ''}`}>
+                    <div
+                      className={`p-2 rounded-lg ${
+                        isCollapsed ? "mx-auto" : ""
+                      }`}
+                    >
                       <Icon className="w-6 h-6" />
                     </div>
-                    {!isCollapsed && <span className="text-base">{item.label}</span>}
+                    {!isCollapsed && (
+                      <span className="text-base">{item.label}</span>
+                    )}
                   </motion.button>
                 );
               })}
@@ -195,16 +206,20 @@ export default function AdminSidebar() {
 
             {/* Footer */}
             {!isCollapsed && (
-              <div className="absolute bottom-0 left-0  right-0 p-4 border-t border-white/10 bg-gray-900/50 backdrop-blur-sm">
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-gray-900/50 backdrop-blur-sm">
                 <button className="w-full flex items-center cursor-pointer justify-center gap-3 px-4 py-3 bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 hover:bg-red-500/30 transition-all">
                   <LogOut className="w-5 h-5" />
                   <span>تسجيل الخروج</span>
                 </button>
-                <p className="text-white/40 text-xs text-center mt-3">نظفلي © 2026</p>
+                <p className="text-white/40 text-xs text-center mt-3">
+                  نظفلي © 2026
+                </p>
               </div>
             )}
+
+            {/* Footer (Collapsed) */}
             {isCollapsed && isDesktop && (
-              <div className="absolute bottom-4 left-0  right-0 flex justify-center">
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center">
                 <button className="p-3 bg-red-500/20 cursor-pointer text-red-300 rounded-xl border border-red-500/30 hover:bg-red-500/30 transition-all">
                   <LogOut className="w-5 h-5" />
                 </button>
@@ -214,8 +229,12 @@ export default function AdminSidebar() {
         )}
       </AnimatePresence>
 
-      {/* Content Spacer - فقط في الديسكتوب */}
-      <div className={`hidden lg:block transition-all duration-300 ${isCollapsed ? "w-20" : "w-72 lg:w-80"}`} />
+      {/* Content Spacer */}
+      <div
+        className={`hidden lg:block transition-all duration-300 ${
+          isCollapsed ? "w-20" : "w-72 lg:w-80"
+        }`}
+      />
     </>
   );
 }
