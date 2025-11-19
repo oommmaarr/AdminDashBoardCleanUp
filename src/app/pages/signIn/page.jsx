@@ -55,20 +55,24 @@ const AuthPage = () => {
         {
           email: formData.email,
           password: formData.password,
-        },
-        {
-          withCredentials : true
         }
       );
-      console.log(resData.data);
-      setLoginSuccess(true);
-      setLoginFailed(false);
+
+      console.log(resData.data); // ستظهر accessToken و refreshToken و admin
+
+      // تخزين البيانات في localStorage
       localStorage.setItem("adminEmail", resData.data.admin.email);
       localStorage.setItem("adminName", resData.data.admin.name);
+      localStorage.setItem("accessToken", resData.data.accessToken);
+      localStorage.setItem("refreshToken", resData.data.refreshToken);
 
-      setTimeout(() => {
-        router.push("/admin");
-      }, 2000);
+      setLoginSuccess(true);
+      setLoginFailed(false);
+
+      // إعادة التوجيه للوحة التحكم
+      if (resData.data.message === "Login successful") {
+        window.location.href = "/admin";
+      }
     } catch (error) {
       setLoginSuccess(false);
       setLoginFailed(true);
@@ -76,6 +80,9 @@ const AuthPage = () => {
       setErrors({ form: message });
     } finally {
       setIsSubmitting(false);
+    }
+    if (resData.data.message === "Login successful") {
+      window.location.href = "/admin"; // هيوجهك للصفحة
     }
   }, [formData, validateForm]);
 

@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  return <>{children}</>; // لا html/body هنا
+  return <>{children}</>;
 }

@@ -75,8 +75,6 @@ export default function AdminSidebar() {
     } catch (err) {
       console.log("Logout API failed, clearing cookies manually...");
     } finally {
-      document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-      document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
       router.push("/auth");
     }
   };
@@ -169,7 +167,7 @@ export default function AdminSidebar() {
                     transition={{ delay: 0.1 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-3 rounded-2xl shadow-lg">
+                    <div className="bg-linear-to-br from-blue-500 to-cyan-500 p-3 rounded-2xl shadow-lg">
                       <Settings className="w-8 h-8 text-white" />
                     </div>
                     <div>
@@ -187,7 +185,7 @@ export default function AdminSidebar() {
                   className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20"
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
                       <UserCircle className="w-7 h-7 text-white" />
                     </div>
                     <div className="flex flex-col space-y-1">
@@ -231,7 +229,7 @@ export default function AdminSidebar() {
                     } px-4 py-4 rounded-xl transition-all duration-300 cursor-pointer group
                       ${
                         active
-                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105"
+                          ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105"
                           : "text-white/70 hover:text-white hover:bg-white/10 hover:scale-105"
                       }`}
                   >

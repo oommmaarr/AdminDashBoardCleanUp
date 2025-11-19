@@ -3,13 +3,33 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+
 export default function AdminDashboard() {
+  const router = useRouter();
   const [previousWorks, setPreviousWorks] = useState([]);
 
+  // حماية الصفحة
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      router.push("/login"); // لو مفيش توكن، ارجع للصفحة
+    }
+  }, [router]);
+
+  // جلب الأعمال السابقة
   useEffect(() => {
     const fetchPreviousWorks = async () => {
       try {
-        const res = await axios.get("https://clean-up-production.up.railway.app/api/previous-work");
+        const token = localStorage.getItem("accessToken");
+        const res = await axios.get(
+          "https://clean-up-production.up.railway.app/api/previous-work",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setPreviousWorks(res.data.data);
       } catch (error) {
         console.error(error);
@@ -18,27 +38,39 @@ export default function AdminDashboard() {
     fetchPreviousWorks();
   }, []);
 
+  // حذف عمل
   const handleDelete = async (id) => {
     if (!confirm("هل أنت متأكد من حذف هذا العمل؟")) return;
     try {
-      await api.delete(`/admin/previous-work/${id}`);
+      const token = localStorage.getItem("accessToken");
+      await axios.delete(
+        `https://clean-up-production.up.railway.app/api/admin/previous-work/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setPreviousWorks(previousWorks.filter((work) => work.id !== id));
     } catch (error) {
       console.error(error);
     }
   };
 
+
+
   return (
     <div className="container mx-auto py-12 px-4 text-white">
+
+
       {/* عنوان الصفحة */}
-      <h1 className="text-4xl text-center sm:text-5xl  md:text-2xl lg:text-2xl xl:text-[40px] tracking-wide sm:tracking-wider md:tracking-widest p-3 font-bold bg-gradient-to-l from-blue-500 to-white bg-clip-text text-transparent drop-shadow-lg">
-مرحبا بك في لوحة تحكم الادمن      </h1>
-      <div className="w-24 h-1 mt-1 bg-linear-to-r from-blue-400 to-purple-500 mx-auto rounded-full"></div>
+      <h1 className="text-4xl text-center sm:text-5xl md:text-2xl lg:text-2xl xl:text-[40px] tracking-wide sm:tracking-wider md:tracking-widest p-3 font-bold bg-gradient-to-l from-blue-500 to-white bg-clip-text text-transparent drop-shadow-lg">
+        مرحبا بك في لوحة تحكم الادمن
+      </h1>
+      <div className="w-24 h-1 mt-1 bg-gradient-to-r from-blue-400 to-purple-500 mx-auto rounded-full"></div>
 
       {/* زر إنشاء عمل جديد */}
       <div className="flex justify-start mt-8">
         <Link href="/admin/create-work">
-          <button className="px-6 py-3 cursor-pointer  bg-blue-500/20 hover:bg-blue-500/30 text-white font-bold rounded-xl border border-blue-500/20 transition-all">
+          <button className="px-6 py-3 cursor-pointer bg-blue-500/20 hover:bg-blue-500/30 text-white font-bold rounded-xl border border-blue-500/20 transition-all">
             إنشاء عمل جديد
           </button>
         </Link>
@@ -62,7 +94,7 @@ export default function AdminDashboard() {
                   className="object-cover group-hover:scale-105 transition-all duration-700 ease-out"
                 />
               )}
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
 
             {/* محتوى الكارد */}
@@ -71,18 +103,20 @@ export default function AdminDashboard() {
                 {work.category}
               </span>
               <h2 className="text-xl font-bold text-white">{work.title}</h2>
-              <p className="text-white/60 text-sm leading-relaxed line-clamp-2">{work.description}</p>
+              <p className="text-white/60 text-sm leading-relaxed line-clamp-2">
+                {work.description}
+              </p>
 
               {/* أزرار التعديل والحذف */}
-              <div className="flex justify-cente items-end gap-2 mt-3">
+              <div className="flex justify-center items-end gap-2 mt-3">
                 <Link href={`/admin/edit-work/${work.id}`}>
-                  <button className="px-22 py-2 bg-blue-500 cursor-pointer hover:bg-blue-700 text-white rounded-xl transition-all border border-yellow-500/20">
+                  <button className="px-6 py-2 bg-blue-500 cursor-pointer hover:bg-blue-700 text-white rounded-xl transition-all border border-yellow-500/20">
                     تعديل
                   </button>
                 </Link>
                 <button
                   onClick={() => handleDelete(work.id)}
-                  className="py-2 px-22 bg-red-600 cursor-pointer  hover:bg-red-700 text-white rounded-xl transition-all border border-red-500/20"
+                  className="px-6 py-2 bg-red-600 cursor-pointer hover:bg-red-700 text-white rounded-xl transition-all border border-red-500/20"
                 >
                   حذف
                 </button>
