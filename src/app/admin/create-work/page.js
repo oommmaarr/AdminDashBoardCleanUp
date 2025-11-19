@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Upload, X, Loader2, CheckCircle, XCircle } from "lucide-react";
 import axios from "axios";
+
 export default function CreateWorkPage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -13,10 +14,21 @@ export default function CreateWorkPage() {
   const [submitStatus, setSubmitStatus] = useState("idle");
   const [dragActive, setDragActive] = useState(false);
 
+  // حماية الصفحة: لو مفيش توكن ارجع لصفحة تسجيل الدخول
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      router.replace("/auth");
+    }
+  }, [router]);
+
   // رفع الصور من الإنبوت أو السحب
   const handleImageChange = (files) => {
     const validImages = files.filter((file) => file.type.startsWith("image/"));
-    setImages((prev) => [...prev, ...validImages]);
+    const imagesWithPreview = validImages.map((file) =>
+      Object.assign(file, { preview: URL.createObjectURL(file) })
+    );
+    setImages((prev) => [...prev, ...imagesWithPreview]);
   };
 
   const handleDrop = (e) => {
@@ -42,18 +54,15 @@ export default function CreateWorkPage() {
   };
 
   const removeImage = (index) => {
+    URL.revokeObjectURL(images[index].preview); // تحرير الذاكرة
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // رفع العمل
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !title.trim() ||
-      !description.trim() ||
-      !category.trim() ||
-      images.length === 0
-    ) {
+    if (!title.trim() || !description.trim() || !category.trim() || images.length === 0) {
       alert("من فضلك املأ جميع الحقول وارفع صورة واحدة على الأقل");
       return;
     }
@@ -67,14 +76,17 @@ export default function CreateWorkPage() {
     setSubmitStatus("loading");
 
     try {
+      const token = localStorage.getItem("accessToken");
       await axios.post(
         "https://clean-up-production.up.railway.app/api/admin/previous-work",
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true, // 🔑 مهم لإرسال HttpOnly cookie
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         }
-      );  
+      );
 
       setSubmitStatus("success");
       setTimeout(() => router.push("/admin"), 2500);
@@ -134,7 +146,7 @@ export default function CreateWorkPage() {
           />
         </div>
 
-        {/* رفع الصور مع Drag & Drop */}
+        {/* رفع الصور */}
         <div>
           <label className="block mb-3 text-lg font-semibold">رفع الصور</label>
           <div
@@ -168,7 +180,7 @@ export default function CreateWorkPage() {
               {images.map((img, index) => (
                 <div key={index} className="relative group">
                   <Image
-                    src={URL.createObjectURL(img)}
+                    src={img.preview}
                     alt={`preview-${index}`}
                     width={300}
                     height={300}
@@ -187,7 +199,7 @@ export default function CreateWorkPage() {
           )}
         </div>
 
-        {/* الزر الذكي */}
+        {/* زر الرفع */}
         <button
           type="submit"
           disabled={submitStatus === "loading" || submitStatus === "success"}
