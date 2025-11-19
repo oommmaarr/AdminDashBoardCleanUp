@@ -1,9 +1,9 @@
 "use client";
-
 import React, { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Mail, Eye, EyeOff } from "lucide-react";
-
+import { Mail, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 const AuthPage = () => {
   const [loginShowPassword, setLoginShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -12,7 +12,9 @@ const AuthPage = () => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [loginFailed, setLoginFailed] = useState(false);
+  const router = useRouter();
   const validateForm = useCallback(() => {
     const newErrors = {};
     if (!formData.email.trim()) {
@@ -35,42 +37,94 @@ const AuthPage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
+    setLoginSuccess(false);
+    setLoginFailed(false);
   }, []);
 
   const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
+
     setIsSubmitting(true);
+    setErrors({});
+    setLoginSuccess(false);
+    setLoginFailed(false);
+
     try {
-      // هنا ممكن تضيف استدعاء NextAuth أو API للتحقق من الدخول
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("تم تسجيل الدخول:", formData);
+      const resData = await axios.post(
+        "https://clean-up-production.up.railway.app/api/admin/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          withCredentials : true
+        }
+      );
+      console.log(resData.data);
+      setLoginSuccess(true);
+      setLoginFailed(false);
+      localStorage.setItem("adminEmail", resData.data.admin.email);
+      localStorage.setItem("adminName", resData.data.admin.name);
+
+      setTimeout(() => {
+        router.push("/admin");
+      }, 2000);
     } catch (error) {
-      console.error("فشل تسجيل الدخول:", error);
-      setErrors({ form: "حدث خطأ أثناء تسجيل الدخول" });
+      setLoginSuccess(false);
+      setLoginFailed(true);
+      const message = error.response?.data?.error || error.message || "حدث خطأ";
+      setErrors({ form: message });
     } finally {
       setIsSubmitting(false);
     }
   }, [formData, validateForm]);
 
   return (
-    <div className="flex items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-90" />
+    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden ">
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="relative w-full max-w-md bg-gray-900 bg-opacity-85 backdrop-blur-2xl rounded-3xl shadow-xl p-10 border border-gray-800"
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative w-full max-w-lg bg-gray-900 bg-opacity-90 backdrop-blur-3xl rounded-3xl shadow-2xl p-12 border border-gray-800"
       >
-        <h2 className="text-3xl font-bold text-white mb-10 tracking-tight">
+        <h2 className="text-4xl font-bold text-white mb-12 text-center tracking-tight">
           مرحبًا بعودتك
         </h2>
 
-        <div className="space-y-7">
-          {/* Email */}
+        <div className="space-y-8">
+          {/* رسالة النجاح */}
+          {loginSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-green-500 bg-opacity-20 border border-green-500 text-green-400 px-5 py-4 rounded-2xl flex items-center gap-3"
+            >
+              <CheckCircle size={28} />
+              <span className="font-semibold text-white text-lg">
+                تم تسجيل الدخول بنجاح!
+              </span>
+            </motion.div>
+          )}
+
+          {/* رسالة الخطأ */}
+          {loginFailed && errors.form && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-500 bg-opacity-20 border border-red-500 text-red-400 px-5 py-4 rounded-2xl flex items-center gap-3"
+            >
+              <XCircle size={28} />
+              <span className="font-semibold text-white text-lg">
+                {errors.form}
+              </span>
+            </motion.div>
+          )}
+
+          {/* البريد الإلكتروني */}
           <div className="relative w-full">
             <Mail
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-              size={22}
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
+              size={24}
             />
             <input
               type="email"
@@ -78,16 +132,16 @@ const AuthPage = () => {
               placeholder="البريد الإلكتروني"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full bg-gray-800 bg-opacity-70 text-white pl-14 pr-4 py-3 
-              rounded-xl border-b-2 border-gray-600 focus:border-cyan-500 
-              focus:outline-none transition-all placeholder-gray-500 text-lg"
+              className="w-full bg-gray-800 bg-opacity-70 text-white pl-16 pr-6 py-4 rounded-2xl border-2 border-gray-700 focus:border-cyan-500 focus:outline-none transition-all placeholder-gray-500 text-lg"
             />
             {errors.email && (
-              <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+              <p className="text-red-400 text-sm mt-2 text-right">
+                {errors.email}
+              </p>
             )}
           </div>
 
-          {/* Password */}
+          {/* كلمة المرور */}
           <div className="relative w-full">
             <input
               type={loginShowPassword ? "text" : "password"}
@@ -95,36 +149,72 @@ const AuthPage = () => {
               placeholder="كلمة المرور"
               value={formData.password}
               onChange={handleInputChange}
-              className="w-full bg-gray-800 bg-opacity-70 text-white pl-4 pr-14 py-3
-              rounded-xl border-b-2 border-gray-600 focus:border-cyan-500 
-              focus:outline-none transition-all placeholder-gray-500 text-lg"
+              className="w-full bg-gray-800 bg-opacity-70 text-white pl-6 pr-16 py-4 rounded-2xl border-2 border-gray-700 focus:border-cyan-500 focus:outline-none transition-all placeholder-gray-500 text-lg"
             />
             <button
               type="button"
               onClick={() => setLoginShowPassword(!loginShowPassword)}
-              className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+              className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
             >
-              {loginShowPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+              {loginShowPassword ? <EyeOff size={24} /> : <Eye size={24} />}
             </button>
             {errors.password && (
-              <p className="text-red-400 text-sm mt-1">{errors.password}</p>
+              <p className="text-red-400 text-sm mt-2 text-right">
+                {errors.password}
+              </p>
             )}
           </div>
 
-          {/* Button */}
+          {/* زر تسجيل الدخول */}
           <motion.button
             whileHover={{
               scale: 1.05,
-              boxShadow: "0 0 25px rgba(34, 211, 238, 0.55)",
+              boxShadow: loginSuccess
+                ? "0 0 30px rgba(34, 197, 94, 0.6)"
+                : loginFailed
+                ? "0 0 30px rgba(239, 68, 68, 0.6)"
+                : "0 0 30px rgba(34, 211, 238, 0.6)",
             }}
             whileTap={{ scale: 0.96 }}
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="cursor-pointer w-full bg-gradient-to-r from-blue-600 to-blue-800 
-            text-white py-4 rounded-xl font-semibold text-lg shadow-lg 
-            hover:opacity-90 transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
+            className={`w-full py-5 rounded-2xl font-bold text-xl shadow-xl transition-all duration-500 text-white
+              ${
+                loginSuccess
+                  ? "bg-linear-to-r from-green-500 to-green-700"
+                  : loginFailed
+                  ? "bg-linear-to-r from-red-500 to-red-700"
+                  : "bg-linear-to-r from-cyan-500 to-blue-600"
+              }
+              ${
+                isSubmitting
+                  ? "opacity-70 cursor-not-allowed"
+                  : "cursor-pointer"
+              }
+            `}
           >
-            {isSubmitting ? "جاري الإرسال..." : "تسجيل الدخول"}
+            {isSubmitting ? (
+              <span className="flex items-center justify-center gap-3">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-6 h-6 border-4 border-white border-t-transparent rounded-full"
+                />
+                جاري تسجيل الدخول...
+              </span>
+            ) : loginSuccess ? (
+              <span className="flex items-center justify-center gap-3">
+                <CheckCircle size={26} />
+                تم بنجاح
+              </span>
+            ) : loginFailed ? (
+              <span className="flex items-center justify-center gap-3">
+                <XCircle size={26} />
+                حاول مرة أخرى
+              </span>
+            ) : (
+              "تسجيل الدخول"
+            )}
           </motion.button>
         </div>
       </motion.div>

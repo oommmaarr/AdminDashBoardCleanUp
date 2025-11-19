@@ -9,7 +9,7 @@ export const metadata = {
 export default function AuthLayout({ children }) {
   return (
     <html lang="ar" dir="rtl">
-      <body className="flex items-center justify-center min-h-screen bg-linear-to-br from-black via-[#003983] to-black bg-fixed">
+      <body className="flex items-center justify-center min-h-screen bg-linear-to-br from-black via-[#003983] to-black">
         {children}
       </body>
     </html>

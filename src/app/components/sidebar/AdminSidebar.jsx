@@ -11,16 +11,21 @@ import {
   X,
 } from "lucide-react";
 import Hamburger from "hamburger-react";
+import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function AdminSidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState("dashboard");
   const [isDesktop, setIsDesktop] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const router = useRouter();
+  const [adminName, setAdminName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
 
+  const router = useRouter();
+  const pathname = usePathname(); // لتحديد الصفحة الحالية بدقة
+
+  // تحديد إذا كان الجهاز Desktop
   useEffect(() => {
     const checkSize = () => setIsDesktop(window.innerWidth >= 1024);
     checkSize();
@@ -28,17 +33,59 @@ export default function AdminSidebar() {
     return () => window.removeEventListener("resize", checkSize);
   }, []);
 
+  // القوائم
   const menuItems = [
-    { id: "dashboard", label: "لوحة التحكم", icon: LayoutDashboard, href: "/" },
-    { id: "home", label: "العودة للموقع", icon: Home, href: "/" },
+    {
+      id: "dashboard",
+      label: "لوحة التحكم",
+      icon: LayoutDashboard,
+      href: "/admin",
+    },
+    {
+      id: "create",
+      label: "إضافة عمل جديد",
+      icon: Briefcase,
+      href: "/admin/create-work",
+    },
+    {
+      id: "home",
+      label: "العودة للموقع",
+      icon: Home,
+      href: "/",
+    },
   ];
 
+  // دالة لتحديد إذا كان العنصر هو الصفحة الحالية (دقيقة جدًا)
+  const isActive = (href) => {
+    const normalizedCurrent = pathname.replace(/\/$/, "") || "/";
+    const normalizedHref = href.replace(/\/$/, "") || "/";
+    return normalizedCurrent === normalizedHref;
+  };
+
+  // التنقل مع إغلاق السايدبار على الموبايل
   const handleNavigation = (href) => {
-    const id = href.split("/").pop() || "dashboard";
-    setActiveItem(id);
     if (!isDesktop) setIsSidebarOpen(false);
     router.push(href);
   };
+
+  // تسجيل الخروج
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/admin/logout"); // عدل المسار لو مختلف
+    } catch (err) {
+      console.log("Logout API failed, clearing cookies manually...");
+    } finally {
+      document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      router.push("/auth");
+    }
+  };
+
+  // جلب بيانات الأدمن من localStorage
+  useEffect(() => {
+    setAdminName(localStorage.getItem("adminName") || "");
+    setAdminEmail(localStorage.getItem("adminEmail") || "");
+  }, []);
 
   return (
     <>
@@ -48,9 +95,8 @@ export default function AdminSidebar() {
           isSidebarOpen ? "translate-y-[-100%]" : "translate-y-0"
         }`}
       >
-        <div className="flex items-center justify-between px-4 h-16">
+        <div className="flex items-center justify-between px-4 h-16 bg-gray-900/80">
           <h1 className="text-lg font-bold text-white">لوحة تحكم الادمن</h1>
-
           <div className="z-50">
             <Hamburger
               toggled={isSidebarOpen}
@@ -71,7 +117,6 @@ export default function AdminSidebar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
             onClick={() => setIsSidebarOpen(false)}
             className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           />
@@ -85,13 +130,8 @@ export default function AdminSidebar() {
             initial={{ x: isDesktop ? 0 : "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
-              duration: 0.4,
-            }}
-            className={`fixed top-0 right-0 h-full border-l border-white/10 shadow-2xl z-50 transition-all duration-300 ${
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className={`fixed top-0 right-0 h-full  border-l border-white/10 shadow-2xl z-50 transition-all duration-300 backdrop-blur-2xl ${
               isDesktop ? (isCollapsed ? "w-20" : "w-72 lg:w-80") : "w-full"
             }`}
           >
@@ -109,11 +149,7 @@ export default function AdminSidebar() {
 
             {/* Collapse Button (Desktop) */}
             {isDesktop && (
-              <div
-                className={`flex items-center justify-center p-4 border-b border-white/10 ${
-                  isCollapsed ? "h-20" : ""
-                }`}
-              >
+              <div className="flex items-center justify-center p-4 border-b border-white/10">
                 <Hamburger
                   toggled={!isCollapsed}
                   toggle={() => setIsCollapsed(!isCollapsed)}
@@ -133,7 +169,7 @@ export default function AdminSidebar() {
                     transition={{ delay: 0.1 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="bg-linear-to-br from-blue-500 to-cyan-500 p-3 rounded-2xl shadow-lg">
+                    <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-3 rounded-2xl shadow-lg">
                       <Settings className="w-8 h-8 text-white" />
                     </div>
                     <div>
@@ -154,9 +190,19 @@ export default function AdminSidebar() {
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
                       <UserCircle className="w-7 h-7 text-white" />
                     </div>
-                    <div>
-                      <p className="text-white font-bold text-base">أحمد محمد</p>
-                      <p className="text-blue-300 text-xs">مدير النظام</p>
+                    <div className="flex flex-col space-y-1">
+                      {adminName ? (
+                        <>
+                          <p className="text-white font-bold text-sm">{adminName}</p>
+                          <p className="text-white text-xs">{adminEmail}</p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="h-4 bg-white/20 rounded animate-pulse w-32"></div>
+                          <div className="h-3 bg-white/10 rounded animate-pulse w-40"></div>
+                        </>
+                      )}
+                      <p className="text-blue-300 text-xs font-bold">مدير النظام</p>
                     </div>
                   </div>
                 </motion.div>
@@ -166,14 +212,13 @@ export default function AdminSidebar() {
             {/* Navigation */}
             <div
               className={`p-4 space-y-3 overflow-y-auto ${
-                !isCollapsed
-                  ? "h-[calc(100vh-280px)]"
-                  : "h-[calc(100vh-120px)]"
+                !isCollapsed ? "h-[calc(100vh-280px)]" : "h-[calc(100vh-120px)]"
               }`}
             >
               {menuItems.map((item, index) => {
                 const Icon = item.icon;
-                const isActive = activeItem === item.id;
+                const active = isActive(item.href);
+
                 return (
                   <motion.button
                     key={item.id}
@@ -181,33 +226,35 @@ export default function AdminSidebar() {
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.1 * (index + 1) }}
                     onClick={() => handleNavigation(item.href)}
-                    className={`w-full flex items-center cursor-pointer ${
+                    className={`w-full flex items-center ${
                       isCollapsed ? "justify-center" : "gap-3"
-                    } px-4 py-4 rounded-xl transition-all duration-300 ${
-                      isActive
-                        ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105"
-                        : "text-white/70 hover:text-white hover:bg-white/10 hover:scale-105"
-                    }`}
-                  >
-                    <div
-                      className={`p-2 rounded-lg ${
-                        isCollapsed ? "mx-auto" : ""
+                    } px-4 py-4 rounded-xl transition-all duration-300 cursor-pointer group
+                      ${
+                        active
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105"
+                          : "text-white/70 hover:text-white hover:bg-white/10 hover:scale-105"
                       }`}
-                    >
-                      <Icon className="w-6 h-6" />
+                  >
+                    <div className={`p-2 rounded-lg ${isCollapsed ? "mx-auto" : ""}`}>
+                      <Icon className={`w-6 h-6 ${active ? "text-white" : "group-hover:text-white"}`} />
                     </div>
                     {!isCollapsed && (
-                      <span className="text-base">{item.label}</span>
+                      <span className={`text-base ${active ? "font-bold" : ""}`}>
+                        {item.label}
+                      </span>
                     )}
                   </motion.button>
                 );
               })}
             </div>
 
-            {/* Footer */}
+            {/* Footer - Expanded */}
             {!isCollapsed && (
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-gray-900/50 backdrop-blur-sm">
-                <button className="w-full flex items-center cursor-pointer justify-center gap-3 px-4 py-3 bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 hover:bg-red-500/30 transition-all">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-xl border border-red-500/30 hover:bg-red-700 transition-all shadow-lg"
+                >
                   <LogOut className="w-5 h-5" />
                   <span>تسجيل الخروج</span>
                 </button>
@@ -217,10 +264,14 @@ export default function AdminSidebar() {
               </div>
             )}
 
-            {/* Footer (Collapsed) */}
+            {/* Footer - Collapsed */}
             {isCollapsed && isDesktop && (
               <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-                <button className="p-3 bg-red-500/20 cursor-pointer text-red-300 rounded-xl border border-red-500/30 hover:bg-red-500/30 transition-all">
+                <button
+                  onClick={handleLogout}
+                  className="p-3 bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 hover:bg-red-500/30 transition-all"
+                  title="تسجيل الخروج"
+                >
                   <LogOut className="w-5 h-5" />
                 </button>
               </div>
@@ -229,7 +280,7 @@ export default function AdminSidebar() {
         )}
       </AnimatePresence>
 
-      {/* Content Spacer */}
+      {/* Spacer for Desktop */}
       <div
         className={`hidden lg:block transition-all duration-300 ${
           isCollapsed ? "w-20" : "w-72 lg:w-80"
