@@ -70,12 +70,28 @@ export default function AdminSidebar() {
 
   // تسجيل الخروج
   const handleLogout = async () => {
+    const token = localStorage.getItem("accessToken");
+
     try {
-      await axios.post("/api/admin/logout"); // عدل المسار لو مختلف
+      await axios.post(
+        "https://clean-up-production.up.railway.app/api/admin/logout",
+        {}, // body فارغ
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Logout successful");
     } catch (err) {
-      console.log("Logout API failed, clearing cookies manually...");
+      console.log("Logout API failed, clearing token manually...");
     } finally {
-      router.push("/auth");
+      // تنظيف localStorage وإعادة التوجيه للصفحة
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("adminName");
+      localStorage.removeItem("adminEmail");
+      router.push("/auth"); // أو /login حسب مسارك
     }
   };
 
@@ -191,7 +207,9 @@ export default function AdminSidebar() {
                     <div className="flex flex-col space-y-1">
                       {adminName ? (
                         <>
-                          <p className="text-white font-bold text-sm">{adminName}</p>
+                          <p className="text-white font-bold text-sm">
+                            {adminName}
+                          </p>
                           <p className="text-white text-xs">{adminEmail}</p>
                         </>
                       ) : (
@@ -200,7 +218,9 @@ export default function AdminSidebar() {
                           <div className="h-3 bg-white/10 rounded animate-pulse w-40"></div>
                         </>
                       )}
-                      <p className="text-blue-300 text-xs font-bold">مدير النظام</p>
+                      <p className="text-blue-300 text-xs font-bold">
+                        مدير النظام
+                      </p>
                     </div>
                   </div>
                 </motion.div>
@@ -233,11 +253,21 @@ export default function AdminSidebar() {
                           : "text-white/70 hover:text-white hover:bg-white/10 hover:scale-105"
                       }`}
                   >
-                    <div className={`p-2 rounded-lg ${isCollapsed ? "mx-auto" : ""}`}>
-                      <Icon className={`w-6 h-6 ${active ? "text-white" : "group-hover:text-white"}`} />
+                    <div
+                      className={`p-2 rounded-lg ${
+                        isCollapsed ? "mx-auto" : ""
+                      }`}
+                    >
+                      <Icon
+                        className={`w-6 h-6 ${
+                          active ? "text-white" : "group-hover:text-white"
+                        }`}
+                      />
                     </div>
                     {!isCollapsed && (
-                      <span className={`text-base ${active ? "font-bold" : ""}`}>
+                      <span
+                        className={`text-base ${active ? "font-bold" : ""}`}
+                      >
                         {item.label}
                       </span>
                     )}

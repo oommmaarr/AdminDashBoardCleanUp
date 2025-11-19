@@ -13,7 +13,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      router.push("/login"); // لو مفيش توكن، ارجع للصفحة
+      router.push("/auth"); // لو مفيش توكن، ارجع للصفحة
     }
   }, [router]);
 
