@@ -51,7 +51,7 @@ export default function AdminSidebar() {
       id: "home",
       label: "العودة للموقع",
       icon: Home,
-      href: "/",
+      href: "https://clean-up-kappa.vercel.app/",
     },
   ];
 
@@ -297,7 +297,7 @@ export default function AdminSidebar() {
               <div className="absolute bottom-4 left-0 right-0 flex justify-center">
                 <button
                   onClick={handleLogout}
-                  className="p-3 bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 hover:bg-red-500/30 transition-all"
+                  className="p-3 bg-red-500/20 text-red-300 cursor-pointer rounded-xl border border-red-500/30 hover:bg-red-500/30 transition-all"
                   title="تسجيل الخروج"
                 >
                   <LogOut className="w-5 h-5" />
