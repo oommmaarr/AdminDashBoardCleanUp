@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   UserCircle,
   X,
+  User2Icon,
 } from "lucide-react";
 import Hamburger from "hamburger-react";
 import axios from "axios";
@@ -46,6 +47,12 @@ export default function AdminSidebar() {
       label: "إضافة عمل جديد",
       icon: Briefcase,
       href: "/admin/create-work",
+    },
+    {
+      id: "update",
+      label: "تعديل بيانات المستخدم",
+      icon: User2Icon,
+      href: "/admin/update-contact",
     },
     {
       id: "home",
