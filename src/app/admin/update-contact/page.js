@@ -32,15 +32,18 @@ export default function ContactForm() {
   const [newHour, setNewHour] = useState("");
   const [submitStatus, setSubmitStatus] = useState("idle"); // idle | loading | success | error
   const [loadingData, setLoadingData] = useState(true);
+  const [token, setToken] = useState(null);
 
-  const token = localStorage.getItem("accessToken");
-
+  // const token = localStorage.getItem("accessToken");
   useEffect(() => {
-    if (!token) {
-      alert("يجب تسجيل الدخول أولاً");
-      setLoadingData(false);
-      return;
-    }
+    const t =
+      typeof window !== "undefined"
+        ? localStorage.getItem("accessToken")
+        : null;
+    setToken(t);
+  }, []);
+  useEffect(() => {
+    if (!token) return; // مستني لما الtoken يتسحب من localStorage
 
     const fetchData = async () => {
       try {
