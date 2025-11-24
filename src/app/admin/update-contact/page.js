@@ -165,7 +165,6 @@ export default function ContactForm() {
     twitter: <Twitter className="w-6 h-6 text-cyan-400" />,
   };
 
-  // لودر Glassmorphism فخم جدًا
   if (loadingData) {
     return (
       <div className="min-h-screen flex items-center justify-center">

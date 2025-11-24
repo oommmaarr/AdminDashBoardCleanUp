@@ -62,7 +62,6 @@ export default function AdminSidebar() {
     },
   ];
 
-  // دالة لتحديد إذا كان العنصر هو الصفحة الحالية (دقيقة جدًا)
   const isActive = (href) => {
     const normalizedCurrent = pathname.replace(/\/$/, "") || "/";
     const normalizedHref = href.replace(/\/$/, "") || "/";

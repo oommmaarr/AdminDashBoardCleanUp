@@ -17,7 +17,6 @@ export default function EditWorkPage() {
   const [submitStatus, setSubmitStatus] = useState("idle");
   const [dragActive, setDragActive] = useState(false);
 
-  // 🔥 NEW — مودال الحذف
   const [deleteModal, setDeleteModal] = useState({
     open: false,
     imageUrl: null,
@@ -61,12 +60,10 @@ export default function EditWorkPage() {
     }
   };
 
-  // ❌ unused old remove → تم تبديله بحذف من السيرفر
   const removeNewImage = (index) => {
     setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // 🔥 NEW — دالة حذف صورة من السيرفر فعلاً
   const deleteExistingImageFromServer = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -85,7 +82,6 @@ export default function EditWorkPage() {
         }
       );
 
-      // إزالة الصورة من UI
       setExistingImages((prev) =>
         prev.filter((img) => img !== deleteModal.imageUrl)
       );
@@ -147,7 +143,6 @@ export default function EditWorkPage() {
         تعديل العمل السابق
       </h1>
 
-      {/* 🔥 NEW — Modal */}
       {deleteModal.open && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl text-black w-96">
@@ -225,7 +220,6 @@ export default function EditWorkPage() {
                     className="rounded-xl object-cover border-2 border-white/20"
                   />
 
-                  {/* 🔥 NEW — زر يفتح المودال */}
                   <button
                     type="button"
                     onClick={() =>
