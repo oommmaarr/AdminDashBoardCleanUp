@@ -254,7 +254,7 @@ export default function ContactForm() {
         {/* الحقول الأخرى */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {Object.keys(fieldLabels).map((field) => (
-            <div key={field} className="space-y-3">
+            <div key={field} className="space-y-3"> 
               <div className="flex items-center gap-3">
                 {fieldIcons[field]}
                 <label className="text-xl font-semibold">
@@ -269,7 +269,8 @@ export default function ContactForm() {
                 placeholder={
                   field === "address"
                     ? "القاهرة - مدينة نصر - شارع..."
-                    : "أدخل الرابط أو الرقم"
+                    : 
+                  field === "phone" ? "ex: +966 5XXXXXXXX"  : "ادخل الرابط"
                 }
                 className="w-full p-5 rounded-xl bg-white/10 border border-white/20 focus:border-cyan-400 outline-none transition text-lg placeholder-white/50"
               />
